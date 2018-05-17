@@ -1,7 +1,8 @@
 Restbed [![Unix Build Status](https://travis-ci.org/Corvusoft/restbed.svg?branch=master)](https://travis-ci.org/Corvusoft/restbed)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/75wqogaks13xp817/branch/master?svg=true)](https://ci.appveyor.com/project/corvusoft/restbed/branch/master)
 =============================================================================================================================
-
+---
+This is a fork of Corvusoft's Restbed service to provide for a default handler so that edge case requests can be processed within the Restbed framework without having to reproduce the work in the out of scope call back handlers.
 ---
 
 Restbed is a comprehensive and consistent programming model for building applications that require seamless and secure communication over HTTP, with the ability to model a range of business processes, designed to target mobile, tablet, desktop and embedded production environments.
