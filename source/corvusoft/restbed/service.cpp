@@ -253,7 +253,12 @@ namespace restbed
         {
             return;
         }
-        
+       
+        if (resource->m_pimpl->m_paths.empty()) {
+          // Default Resource
+          m_pimpl->m_resource_route_default = std::make_pair("/", resource);
+        }
+
         auto paths = resource->m_pimpl->m_paths;
         
         if ( not m_pimpl->has_unique_paths( paths ) )

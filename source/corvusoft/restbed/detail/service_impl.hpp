@@ -156,6 +156,8 @@ namespace restbed
                 
                 std::map< std::string, std::string > m_resource_paths;
                 
+                std::pair< std::string, std::shared_ptr<const Resource> > m_resource_route_default;
+
                 std::map< std::string, std::shared_ptr< const Resource > > m_resource_routes;
                 
                 std::function< void ( void ) > m_ready_handler;
