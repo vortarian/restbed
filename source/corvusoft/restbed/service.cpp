@@ -258,22 +258,24 @@ namespace restbed
           // Default Resource
           m_pimpl->m_resource_route_default = std::make_pair("/", resource);
         }
-
-        auto paths = resource->m_pimpl->m_paths;
-        
-        if ( not m_pimpl->has_unique_paths( paths ) )
+        else 
         {
-            throw invalid_argument( "Resource would pollute namespace. Please ensure all published resources have unique paths." );
-        }
-        
-        for ( auto& path : paths )
-        {
-            const string sanitised_path = m_pimpl->sanitise_path( path );
+            auto paths = resource->m_pimpl->m_paths;
             
-            m_pimpl->m_resource_paths[ sanitised_path ] = path;
-            m_pimpl->m_resource_routes[ sanitised_path ] = resource;
+            if ( not m_pimpl->has_unique_paths( paths ) )
+            {
+                throw invalid_argument( "Resource would pollute namespace. Please ensure all published resources have unique paths." );
+            }
+            
+            for ( auto& path : paths )
+            {
+                const string sanitised_path = m_pimpl->sanitise_path( path );
+                
+                m_pimpl->m_resource_paths[ sanitised_path ] = path;
+                m_pimpl->m_resource_routes[ sanitised_path ] = resource;
+            }
         }
-        
+       
         const auto& methods = resource->m_pimpl->m_methods;
         m_pimpl->m_supported_methods.insert( methods.begin( ), methods.end( ) );
     }

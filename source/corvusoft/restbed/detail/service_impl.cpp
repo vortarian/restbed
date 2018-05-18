@@ -472,15 +472,19 @@ namespace restbed
             rule_engine( session, m_rules, [ this ]( const shared_ptr< Session > session )
             {
                 auto res = find_if( m_resource_routes.begin( ), m_resource_routes.end( ), bind( &ServiceImpl::resource_router, this, session, _1 ) );
-                if ( res == m_resource_routes.end( ) && m_resource_route_default.second != nullptr )
+                if ( res == m_resource_routes.end( ) && m_resource_route_default.second == nullptr )
                 {
                     return not_found( session );
                 }
-                const auto path = (res == m_resource_routes.end()) ? m_resource_route_default.first : res->first;
-                const auto resource = (res == m_resource_routes.end()) ? m_resource_route_default.second : res->second;
+                bool usingDefault = res == m_resource_routes.end();
+                const auto path = (usingDefault) ? m_resource_route_default.first : res->first;
+                const auto resource = (usingDefault) ? m_resource_route_default.second : res->second;
                 session->m_pimpl->m_resource = resource;
                 const auto request = session->get_request( );
-                extract_path_parameters( path, request );
+                if(false == usingDefault)
+                {
+                    extract_path_parameters( path, request );
+                }
                 
                 const auto callback = [ this ]( const shared_ptr< Session > session )
                 {
