@@ -47,6 +47,7 @@ namespace restbed
 {
     static Bytes empty_body = { };
     static multimap< string, string > empty_headers = { };
+    const std::string Session::SKIP_REQUEST_BODY_PERSISTENCE = "SKIP_REQUEST_BODY_PERSISTENCE"; 
     
     Session::Session( const string& id ) : m_pimpl( new SessionImpl )
     {

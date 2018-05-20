@@ -90,14 +90,16 @@ namespace restbed
             session->m_pimpl->m_request->m_pimpl->m_buffer->consume( length );
             
             auto& body = m_request->m_pimpl->m_body;
-            
-            if ( body.empty( ) )
-            {
-                body = data;
-            }
-            else
-            {
-                body.insert( body.end( ), data.begin( ), data.end( ) );
+
+            if(!session->has(Session::SKIP_REQUEST_BODY_PERSISTENCE)) {
+                if ( body.empty( ) )
+                {
+                    body = data;
+                }
+                else
+                {
+                    body.insert( body.end( ), data.begin( ), data.end( ) );
+                }
             }
             
             callback( session, data );

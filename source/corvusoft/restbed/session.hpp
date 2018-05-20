@@ -48,7 +48,8 @@ namespace restbed
             //Friends
             
             //Definitions
-            
+            const static std::string SKIP_REQUEST_BODY_PERSISTENCE;
+
             //Constructors
             explicit Session( const std::string& id );
             
@@ -189,6 +190,7 @@ namespace restbed
             //Properties
             std::unique_ptr< detail::SessionImpl > m_pimpl;
     };
+
 }
 
 #endif  /* _RESTBED_SESSION_H */

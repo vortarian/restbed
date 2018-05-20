@@ -481,7 +481,7 @@ namespace restbed
                 const auto resource = (usingDefault) ? m_resource_route_default.second : res->second;
                 session->m_pimpl->m_resource = resource;
                 const auto request = session->get_request( );
-                if(false == usingDefault)
+                //if(false == usingDefault)
                 {
                     extract_path_parameters( path, request );
                 }
