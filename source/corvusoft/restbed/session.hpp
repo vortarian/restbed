@@ -48,7 +48,6 @@ namespace restbed
             //Friends
             
             //Definitions
-            const static std::string SKIP_REQUEST_BODY_PERSISTENCE;
 
             //Constructors
             explicit Session( const std::string& id );
@@ -98,6 +97,8 @@ namespace restbed
             
             void yield( const int status, const std::string& body, const std::multimap< std::string, std::string >& headers, const std::function< void ( const std::shared_ptr< Session > ) >& callback = nullptr );
             
+            void fetch( const std::size_t length, const std::shared_ptr< Bytes > buffer, const std::function< void ( const std::shared_ptr< Session >, const Bytes& ) >& callback );
+
             void fetch( const std::size_t length, const std::function< void ( const std::shared_ptr< Session >, const Bytes& ) >& callback );
             
             void fetch( const std::string& delimiter, const std::function< void ( const std::shared_ptr< Session >, const Bytes& ) >& callback );

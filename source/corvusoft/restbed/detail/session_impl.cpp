@@ -82,7 +82,17 @@ namespace restbed
         {
             return;
         }
-        
+
+        void SessionImpl::fetch_buffer( const size_t length, const shared_ptr<Bytes> buffer, const shared_ptr< Session > session, const function< void ( const shared_ptr< Session >, const Bytes& ) >& callback ) const
+        {
+            const auto data_ptr = asio::buffer_cast< const Byte* >( session->m_pimpl->m_request->m_pimpl->m_buffer->data( ) );
+            // Guarantee the capacity
+            buffer->reserve(buffer->size() + length);
+            buffer->insert(buffer->end(), data_ptr, data_ptr + length);
+            session->m_pimpl->m_request->m_pimpl->m_buffer->consume( length );
+            callback( session, *buffer.get());
+        }
+
         void SessionImpl::fetch_body( const size_t length, const shared_ptr< Session > session, const function< void ( const shared_ptr< Session >, const Bytes& ) >& callback ) const
         {
             const auto data_ptr = asio::buffer_cast< const Byte* >( session->m_pimpl->m_request->m_pimpl->m_buffer->data( ) );
@@ -91,17 +101,15 @@ namespace restbed
             
             auto& body = m_request->m_pimpl->m_body;
 
-            if(!session->has(Session::SKIP_REQUEST_BODY_PERSISTENCE)) {
-                if ( body.empty( ) )
-                {
-                    body = data;
-                }
-                else
-                {
-                    body.insert( body.end( ), data.begin( ), data.end( ) );
-                }
+            if ( body.empty( ) )
+            {
+                body = data;
             }
-            
+            else
+            {
+                body.insert( body.end( ), data.begin( ), data.end( ) );
+            }
+        
             callback( session, data );
         }
         

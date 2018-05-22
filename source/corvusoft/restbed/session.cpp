@@ -47,7 +47,6 @@ namespace restbed
 {
     static Bytes empty_body = { };
     static multimap< string, string > empty_headers = { };
-    const std::string Session::SKIP_REQUEST_BODY_PERSISTENCE = "SKIP_REQUEST_BODY_PERSISTENCE"; 
     
     Session::Session( const string& id ) : m_pimpl( new SessionImpl )
     {
@@ -282,7 +281,40 @@ namespace restbed
         
         yield( response, callback );
     }
-    
+
+    // Fetches using the passed in buffer
+    void Session::fetch( const size_t length, const shared_ptr<Bytes> buffer, const function< void ( const shared_ptr< Session >, const Bytes& ) >& callback )
+    {
+        auto session = shared_from_this( );
+        
+        if ( is_closed( ) )
+        {
+            const auto error_handler = m_pimpl->get_error_handler( );
+            return error_handler( 500, runtime_error( "Fetch failed: session already closed." ), session );
+        }
+        
+        if ( length > m_pimpl->m_request->m_pimpl->m_buffer->size( ) )
+        {
+            size_t size = length - m_pimpl->m_request->m_pimpl->m_buffer->size( );
+            
+            m_pimpl->m_request->m_pimpl->m_socket->read( m_pimpl->m_request->m_pimpl->m_buffer, size, [ this, buffer, session, length, callback ]( const error_code & error, size_t )
+            {
+                if ( error )
+                {
+                    const auto message = String::format( "Fetch failed: %s", error.message( ).data( ) );
+                    const auto error_handler = m_pimpl->get_error_handler( );
+                    return error_handler( 500, runtime_error( message ), session );
+                }
+                
+                m_pimpl->fetch_buffer( length, buffer, session, callback );
+            } );
+        }
+        else
+        {
+            m_pimpl->fetch_buffer( length, buffer, session, callback );
+        }
+    }
+
     void Session::fetch( const size_t length, const function< void ( const shared_ptr< Session >, const Bytes& ) >& callback )
     {
         auto session = shared_from_this( );
