@@ -395,7 +395,7 @@ namespace restbed
              m_timer->cancel( );
 
              // Allow reading to continue if the delimiter isn't found by the time the buffer is full
-             if ( error != asio::error::not_found )
+             if ( error && error != asio::error::not_found )
              {
                m_is_open = false;
              }
