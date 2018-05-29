@@ -378,7 +378,56 @@ namespace restbed
             
             return length;
         }
-        
+
+        void SocketImpl::read_buffered( const shared_ptr< asio::streambuf >& data, const string& delimiter, const function< void ( const error_code&, size_t ) >& callback )
+        {
+          m_timer->cancel( );
+          m_timer->expires_from_now( m_timeout );
+          m_timer->async_wait( m_strand->wrap( bind( &SocketImpl::connection_timeout_handler, this, shared_from_this( ), _1 ) ) );
+
+    #ifdef BUILD_SSL
+
+          if ( m_socket not_eq nullptr )
+            {
+    #endif
+          asio::async_read_until( *m_socket, *data, delimiter, m_strand->wrap( [ this, callback ]( const error_code & error, size_t length )
+           {
+             m_timer->cancel( );
+
+             // Allow reading to continue if the delimiter isn't found by the time the buffer is full
+             if ( error != asio::error::not_found )
+             {
+               m_is_open = false;
+             }
+
+             if ( error not_eq asio::error::operation_aborted )
+             {
+               callback( error, length );
+             }
+           } ) );
+    #ifdef BUILD_SSL
+          }
+          else
+          {
+              asio::async_read_until( *m_ssl_socket, *data, delimiter, m_strand->wrap( [ this, callback ]( const error_code & error, size_t length )
+              {
+                  m_timer->cancel( );
+
+                  if ( error != asio::error::not_found )
+                  {
+                      m_is_open = false;
+                  }
+
+                  if ( error not_eq asio::error::operation_aborted )
+                  {
+                      callback( error, length );
+                  }
+              } ) );
+          }
+
+    #endif
+        }
+
         void SocketImpl::read( const shared_ptr< asio::streambuf >& data, const string& delimiter, const function< void ( const error_code&, size_t ) >& callback )
         {
             m_timer->cancel( );
