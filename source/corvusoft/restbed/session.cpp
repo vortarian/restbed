@@ -294,7 +294,7 @@ namespace restbed
         
         m_pimpl->m_request->m_pimpl->m_socket->read_buffered( m_pimpl->m_request->m_pimpl->m_buffer, delimiter, [ this, buffer, session, callback ]( const error_code & error, size_t length )
         {
-            if ( error != asio::error::not_found )
+            if ( error && error != asio::error::not_found )
             {
                 const auto message = String::format( "Fetch failed: %s", error.message( ).data( ) );
                 const auto error_handler = m_pimpl->get_error_handler( );
