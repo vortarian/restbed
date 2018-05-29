@@ -413,7 +413,7 @@ namespace restbed
               {
                   m_timer->cancel( );
 
-                  if ( error != asio::error::not_found )
+                 if ( error && error != asio::error::not_found )
                   {
                       m_is_open = false;
                   }
