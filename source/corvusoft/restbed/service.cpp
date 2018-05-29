@@ -346,7 +346,17 @@ namespace restbed
     {
         return m_pimpl->get_https_uri( );
     }
-    
+
+    void Service::set_buffer_max( const std::size_t& value )
+    {
+        if ( is_up( ) )
+        {
+            throw runtime_error( "Runtime modifications of the service are prohibited." );
+        }
+
+        m_pimpl->m_buffer_max = value;
+    }
+
     void Service::set_logger( const shared_ptr< Logger >& value )
     {
         if ( is_up( ) )

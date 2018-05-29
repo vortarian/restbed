@@ -80,6 +80,8 @@ namespace restbed
             const std::shared_ptr< const Uri > get_https_uri( void ) const;
             
             //Setters
+            void set_buffer_max( const std::size_t& value );
+
             void set_logger( const std::shared_ptr< Logger >& value );
             
             void set_session_manager( const std::shared_ptr< SessionManager >& value );

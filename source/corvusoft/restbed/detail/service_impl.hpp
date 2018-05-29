@@ -127,7 +127,9 @@ namespace restbed
                 
                 //Properties
                 std::chrono::steady_clock::time_point m_uptime;
-                
+
+                std::size_t m_buffer_max;
+
                 std::shared_ptr< Logger > m_logger;
                 
                 std::set< std::string > m_supported_methods;

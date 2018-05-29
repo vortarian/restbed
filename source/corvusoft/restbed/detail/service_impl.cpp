@@ -80,6 +80,7 @@ namespace restbed
     namespace detail
     {
         ServiceImpl::ServiceImpl( void ) : m_uptime( steady_clock::time_point::min( ) ),
+            m_buffer_max(std::numeric_limits<std::size_t>::max),
             m_logger( nullptr ),
             m_supported_methods( ),
             m_settings( nullptr ),
@@ -542,7 +543,7 @@ namespace restbed
                     session->m_pimpl->m_request = make_shared< Request >( );
                     session->m_pimpl->m_request->m_pimpl->m_socket = connection;
                     session->m_pimpl->m_request->m_pimpl->m_socket->m_error_handler = m_error_handler;
-                    session->m_pimpl->m_request->m_pimpl->m_buffer = make_shared< asio::streambuf >( );
+                    session->m_pimpl->m_request->m_pimpl->m_buffer = make_shared< asio::streambuf >( m_buffer_size );
                     session->m_pimpl->m_keep_alive_callback = bind( &ServiceImpl::parse_request, this, _1, _2, _3 );
                     session->m_pimpl->m_request->m_pimpl->m_socket->read( session->m_pimpl->m_request->m_pimpl->m_buffer, "\r\n\r\n", bind( &ServiceImpl::parse_request, this, _1, _2, session ) );
                 } );
