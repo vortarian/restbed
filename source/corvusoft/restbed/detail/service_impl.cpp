@@ -80,7 +80,7 @@ namespace restbed
     namespace detail
     {
         ServiceImpl::ServiceImpl( void ) : m_uptime( steady_clock::time_point::min( ) ),
-            m_buffer_max(std::numeric_limits<std::size_t>::max),
+            m_buffer_max((std::numeric_limits<std::size_t>::max)()),
             m_logger( nullptr ),
             m_supported_methods( ),
             m_settings( nullptr ),
