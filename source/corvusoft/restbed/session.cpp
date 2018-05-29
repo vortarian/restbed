@@ -282,7 +282,29 @@ namespace restbed
         yield( response, callback );
     }
 
-    // Fetches using the passed in buffer
+    void Session::fetch( const string& delimiter, const shared_ptr<Bytes> buffer, const function< void ( const shared_ptr< Session >, const Bytes& ) >& callback )
+    {
+        auto session = shared_from_this( );
+        
+        if ( is_closed( ) )
+        {
+            const auto error_handler = m_pimpl->get_error_handler( );
+            return error_handler( 500, runtime_error( "Fetch failed: session already closed." ), session );
+        }
+        
+        m_pimpl->m_request->m_pimpl->m_socket->read( m_pimpl->m_request->m_pimpl->m_buffer, delimiter, [ this, buffer, session, callback ]( const error_code & error, size_t length )
+        {
+            if ( error )
+            {
+                const auto message = String::format( "Fetch failed: %s", error.message( ).data( ) );
+                const auto error_handler = m_pimpl->get_error_handler( );
+                return error_handler( 500, runtime_error( message ), session );
+            }
+            
+            m_pimpl->fetch_buffer( length, buffer, session, callback );
+        } );
+    }
+    
     void Session::fetch( const size_t length, const shared_ptr<Bytes> buffer, const function< void ( const shared_ptr< Session >, const Bytes& ) >& callback )
     {
         auto session = shared_from_this( );
