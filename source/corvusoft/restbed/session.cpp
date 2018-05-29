@@ -294,11 +294,17 @@ namespace restbed
         
         m_pimpl->m_request->m_pimpl->m_socket->read_buffered( m_pimpl->m_request->m_pimpl->m_buffer, delimiter, [ this, buffer, session, callback ]( const error_code & error, size_t length )
         {
-            if ( error && error != asio::error::not_found )
+            if ( error )
             {
-                const auto message = String::format( "Fetch failed: %s", error.message( ).data( ) );
-                const auto error_handler = m_pimpl->get_error_handler( );
-                return error_handler( 500, runtime_error( message ), session );
+                asio::streambuf& buff(*m_pimpl->m_request->m_pimpl->m_buffer.get());
+                if(error == asio::error::not_found && buff.max_size() == buff.size()) {
+                // Not technically an error condition, just filled the buffer while reading
+                // The caller will need to process the buffer & ask for more
+                } else {
+                    const auto message = String::format("Fetch failed: %s", error.message().data());
+                    const auto error_handler = m_pimpl->get_error_handler();
+                    return error_handler(500, runtime_error(message), session);
+                }
             }
             
             m_pimpl->fetch_buffer( length, buffer, session, callback );
